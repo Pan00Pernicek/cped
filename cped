@@ -1,0 +1,38 @@
+#!/bin/sh
+a=$1
+if [ -z $a ]
+then
+ listcpu=$(nproc)
+ cpunum=$(printf '%s\n' "$(($listcpu-1))")
+ for u in $(seq 0 $cpunum)
+ do
+  echo -n $u:" "
+  cat /sys/devices/system/cpu/cpufreq/policy$u/scaling_cur_freq
+ done
+elif [ $a = boost-on ]
+then
+ echo 1 > /sys/devices/system/cpu/cpufreq/boost
+elif [ $a = boost-get ]
+then
+ if [ $(cat /sys/devices/system/cpu/cpufreq/boost) = 1 ]
+ then
+  echo enabled
+ elif [ $(cat /sys/devices/system/cpu/cpufreq/boost) = 0 ]
+ then
+  echo disabled
+ else
+  echo unknown, printing raw...
+  cat /sys/devices/system/cpu/cpufreq/boost
+ fi
+elif [ $a = boost ]
+then
+ echo enable bost: "#" cped boost-on
+ echo disable boost: "#" cped boost-off
+ echo get status of boost: "$" cped boost-get
+elif [ $a = boost-off ]
+then
+  echo > /sys/devices/system/cpu/cpufreq/boost
+else
+ echo bost: "$" cped boost
+ echo get speed: "$" cped
+fi
